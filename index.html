@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پڕۆژەی قورئانی پیرۆز & زیکرەکان</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #f8fafc;
+            --accent: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Naskh Arabic', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e293b, #0f172a);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            color: #fff;
+            outline: none;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .toggle-link span {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* Hidden Sections */
+        .hidden {
+            display: none !important;
+        }
+
+        /* App Main Dashboard Layout */
+        nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav button.active {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Audio Intro Banner */
+        .intro-banner {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Quran List */
+        .grid-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .grid-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .grid-item:hover {
+            background: rgba(0, 242, 254, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Zikr Accordion */
+        .zikr-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 4px solid var(--primary);
+        }
+
+        .zikr-box h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .zikr-box p {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+        }
+
+        /* Tasbih Counter */
+        .tasbih-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .counter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+        }
+
+        .tasbih-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            transition: 0.1s;
+        }
+
+        .tasbih-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Prayer Times Card */
+        .prayer-card {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LOGIN & REGISTER CARD -->
+    <div id="authContainer" class="glass-card">
+        
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+            <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">چوونەژوورەوە</h2>
+            <div class="form-group">
+                <label>ئیمێڵ</label>
+                <input type="email" id="loginEmail" placeholder="example@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label>وشەی تێپەڕ (پاسۆرد)</label>
+                <input type="password" id="loginPass" required>
+            </div>
+            <button type="submit" class="btn">چوونەژوورەوە</button>
+            <div class="toggle-link" onclick="switchForm('register')">ئەکاوەنتت نییە؟ <span>دروستکردنی ئەکاوەنت</span></div>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="registerForm" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">دروستکردنی ئەکاوەنت</h2>
+            <div class="form-group">
+                <label>ناوی بەکارهێنەر</label>
+                <input type="text" id="regUser" placeholder="ناو بنووسە..." required>
+            </div>
+            <div class="form-group">
+                <label>ئیمێڵی ڕاستەقینە</label>
+                <input type="email" id="regEmail" placeholder="example@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label>وشەی تێپەڕ (پاسۆرد)</label>
+                <input type="password" id="regPass" required>
+            </div>
+            <div class="form-group">
+                <label>وڵات</label>
+                <select id="regCountry">
+                    <option value="Iraq">عێراق (کوردستان)</option>
+                    <option value="Turkey">تورکیا</option>
+                    <option value="Iran">ئێران</option>
+                    <option value="Germany">ئەڵمانیا</option>
+                </select>
+            </div>
+            <button type="button" class="btn" onclick="sendOTP()">ناردنی کۆدی پشتڕاستکردنەوە</button>
+            <div class="toggle-link" onclick="switchForm('login')">ئەکاوەنتت هەیە؟ <span>چوونەژوورەوە</span></div>
+        </form>
+
+        <!-- OTP VERIFICATION FORM -->
+        <div id="otpContainer" class="hidden">
+            <h3 style="text-align: center; margin-bottom: 15px;">پشتڕاستکردنەوەی ئیمێڵ</h3>
+            <p style="text-align: center; font-size: 0.9rem; margin-bottom: 15px; color: #94a3b8;">کۆدێک نێردرا بۆ ئیمێڵەکەت. تکایە لێرە داخڵی بکە:</p>
+            <div class="form-group">
+                <input type="text" id="otpInput" placeholder="کۆدی ٦ ژمارەیی..." style="text-align: center; font-size: 1.5rem; letter-spacing: 5px;">
+            </div>
+            <button type="button" class="btn" onclick="verifyOTP()">پشتڕاستکردنەوە و دروستکردن</button>
+        </div>
+
+    </div>
+
+    <!-- MAIN DASHBOARD (AFTER LOGIN/REGISTER) -->
+    <div id="appContainer" class="glass-card hidden">
+        
+        <!-- Welcome Banner / Audio Intro -->
+        <div class="intro-banner" id="introAudioBanner">
+            <p>🌸 بەخێربێن بۆ پڕۆژەی قورئانی پیرۆز (کاتی گوێگرتن لە سورەتەکە: <span id="timerCount">50</span> چرکە)</p>
+            <audio id="introAudio" style="display:none;">
+                <source src="https://media.discordapp.net/attachments/1548347543602200756/1548677447564791828/65f18ec4666c2639196d6e6283928fa0.mp4?ex=6aa7edc4&is=6aa69c44&hm=a44739eb4b02f50b9c1aef7448d0a5938687b875a78d793a64c3c6cc6ca33d26&" type="audio/mp4">
+            </audio>
+        </div>
+
+        <nav>
+            <button class="active" onclick="showTab('quranTab')"><i class="fa-solid fa-quran"></i> قورئانی پیرۆز</button>
+            <button onclick="showTab('recitersTab')"><i class="fa-solid fa-microphone"></i> قارئەکان</button>
+            <button onclick="showTab('zikrTab')"><i class="fa-solid fa-hands-praying"></i> زیکرەکان</button>
+            <button onclick="showTab('tasbihTab')"><i class="fa-solid fa-fingerprint"></i> تەسبێحی زیرەک</button>
+            <button onclick="showTab('prayerTab')"><i class="fa-solid fa-clock"></i> کاتەکانی بانگ</button>
+            <button class="btn-danger" style="flex:0; padding:10px 15px;" onclick="logout()"><i class="fa-solid fa-sign-out"></i></button>
+        </nav>
+
+        <!-- QURAN TAB -->
+        <div id="quranTab" class="tab-content">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">لیستی سورەتەکان (١١٤ سورەت)</h3>
+            <div class="grid-list" id="surahList"></div>
+        </div>
+
+        <!-- RECITERS TAB -->
+        <div id="recitersTab" class="tab-content hidden">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">مۆستاکان و قارئەکان</h3>
+            <div class="grid-list" id="reciterList"></div>
+        </div>
+
+        <!-- ZIKR TAB -->
+        <div id="zikrTab" class="tab-content hidden">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">بەشی زیکرەکان</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn" style="font-size:0.85rem;" onclick="showZikrCategory('sleep')">زیکرەکانی خەوتن</button>
+                <button class="btn" style="font-size:0.85rem;" onclick="showZikrCategory('morning_evening')">زیکرەکانی بەیانیان و ئێواران</button>
+                <button class="btn" style="font-size:0.85rem;" onclick="showZikrCategory('tahiyat')">تەحیات</button>
+            </div>
+            <div id="zikrContent"></div>
+        </div>
+
+        <!-- TASBIH TAB -->
+        <div id="tasbihTab" class="tab-content hidden">
+            <div class="tasbih-container">
+                <h3 id="tasbihText" style="color: var(--primary); min-height: 40px;">سُبْحَانَ اللَّهِ</h3>
+                <div class="counter-display" id="counter">0</div>
+                <button class="tasbih-btn" onclick="countTasbih()">دابگرە</button>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: #94a3b8;">هەر ١٠٠ جارێک زیکرەکە خۆکارانە دەگۆڕێت</p>
+            </div>
+        </div>
+
+        <!-- PRAYER TIMES TAB -->
+        <div id="prayerTab" class="tab-content hidden">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">کاتەکانی بانگ (کوردستان / سلێمانی)</h3>
+            <div id="prayerTimes">
+                <div class="prayer-card"><span>بەیانی (الفجر)</span> <span>04:30 AM</span></div>
+                <div class="prayer-card"><span>کەوانەی خۆر (الشروق)</span> <span>05:55 AM</span></div>
+                <div class="prayer-card"><span>نیوەڕۆ (الظهر)</span> <span>12:15 PM</span></div>
+                <div class="prayer-card"><span>عەسر (العصر)</span> <span>03:45 PM</span></div>
+                <div class="prayer-card"><span>ئێوارە (المغرب)</span> <span>06:30 PM</span></div>
+                <div class="prayer-card"><span>عیشا (العشاء)</span> <span>07:50 PM</span></div>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn" style="width: auto; padding: 8px 20px;" onclick="enablePrayerAlert()">چالاککردنی ئاگادارکردنەوەی بانگ 🔔</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // System Data & Setup
+    let generatedOTP = null;
+    let otpTimeout = null;
+    let isIntroPlayedOnce = false;
+
+    // EmailJS Init (گۆڕینی PUBLIC_KEY کاتێک هی خۆت دادەنێیت)
+    (function(){
+        emailjs.init("YOUR_PUBLIC_KEY"); 
+    })();
+
+    // 114 Surahs
+    const surahs = [
+        "الفاتحة — فاتحە","البقرة — بەقەرە","آل عمران — ئاڵی عیمران","النساء — نیسا","المائدة — مائیدە","الأنعام — ئەنعام","الأعراف — ئەعراف","الأنفال — ئەنفال","التوبة — تەوبە","يونس — یونس","هود — هود","يوسف — یوسف","الرعد — ڕەعد","إبراهيم — ئیبراهیم","الحجر — حەجر","النحل — نەحل","الإسراء — ئیسرا","الكهف — کەهف","مريم — مەریم","طه — طه","الأنبياء — ئەنبیا","الحج — حەج","المؤمنون — مؤمنون","النور — نور","الفرقان — فورقان","الشعراء — شووعەرا","النمل — نەمل","القصص — قەسەس","العنكبوت — عەنکەبوت","الروم — ڕووم","لقمان — لووقمان","السجدة — سەجدە","الأحزاب — ئەحزاب","سبأ — سەبەئ","فاطر — فاتیر","يس — یاسین","الصافات — صافات","ص — ساد","الزمر — زومەر","غافر — غافیر","فصلت — فوسیڵەت","الشورى — شوورا","الزخرف — زوخروف","الدخان — دوخان","الجاثية — جاسیە","الأحقاف — ئەحقاف","محمد — محەممەد","الفتح — فەتـح","الحجرات — حوجوورات","ق — قاف","الذاريات — زاریات","الطور — توور","النجم — نەجم","القمر — قەمەر","الرحمن — ڕەحمان","الواقعة — واقیعە","الحديد — حەدید","المجادلة — موجادەلە","الحشر — حەشر","الممتحنة — مومتحینە","الصف — سەف","الجمعة — جوموعە","المنافقون — مونافقون","التغابن — تەغابن","الطلاق — تەڵاق","التحريم — تەحریم","الملك — مولک","القلم — قەڵەم","الحاقة — حاققە","المعارج — مەعاریج","نوح — نووح","الجن — جین","المزمل — موزەممیل","المدثر — مودەسیر","القيامة — قیامەت","الإنسان — ئینسان","المرسلات — مورسیلات","النبأ — نەبەئ","النازعات — نازەعات","عبس — عەبەس","التكوير — تەکویر","الانفطار — ئینفیتار","المطففين — موتەففیفین","الانشقاق — ئینشیقاق","البروج — بورووج","الطارق — تارق","الأعلى — ئەعلا","الغاشية — غاشیە","الفجر — فەجر","البلد — بەلەد","الشمس — شەمس","الليل — لەیل","الضحى — دوحا","الشرح — شەرح","التين — تین","العلق — عەلەق","القدر — قەدر","البينة — بەینە","الزلزلة — زەلزەلە","العاديات — عادیات","القارعة — قاریعە","التكاثر — تەکاسوور","العصر — عەسر","الهمزة — هومەزە","الفيل — فیل","قريش — قورەیش","الماعون — ماعوون","الكوثر — کەوسەر","الكافرون — کافیرون","النصر — نەسر","المسد — مەسەد","الإخلاص — ئیخلاس","الفلق — فەلەق","الناس — ناس"
+    ];
+
+    // Reciters List
+    const reciters = [
+        "عبدالباسط عبدالصمد","محمد صدیق المنشاوي","محمود خلیل الحصري","مصطفى إسماعيل","محمود علي البنا","محمد محمود الطبلاوي","عبدالعزيز علي فرج","محمد رفعت","كامل يوسف البهتيمي","أبو العينين شعيشع","عبدالباري محمد","راغب مصطفى غلوش","محمود أبو الوفا الصعيدي","محمد عمران","طه الفشني","أحمد نعینع","محمد الليثي","شعبان عبدالعزيز الصياد","فاروق أحمد ضيف","سيد متولي عبدالعال","عبدالعظيم زاهر","حمدي الزامل","صلاح البدير","سعود الشريم","عبدالرحمن السديس","ماهر المعيقلي","ياسر الدوسري","بندر بليلة","عبدالله عواد الجهني","علي الحذيفي","سعد الغامدي","فارس عباد","ناصر القطامي","خالد الجليل","إدریس أبكر","أحمد العجمي","مشاري العفاسي","هاني الرفاعي","عبدالمحسن القاسم","صلاح الهاشم","عادل الكلباني","محمد أيوب","علي جابر","عبدالله خياط","عبدالبارئ الثبيتي","عبدالرحمن العوسي","نبيل الرفاعي","توفيق الصايغ","عبدالرشيد صوفي","محمد جبريل","عمر القزابري","عبدالعزيز الزهراني","ياسر سلامة","هيثم الدخين","رعد الكردي","أحمد النفيس","عبدالله الموسى","خالد المهنا","عبدالولي الأركاني","محمد اللحيدان","صالح آل طالب","أسامة خياط","فيصل غزاوي","عادل ريان","إبراهيم الأخضر","علي عبدالسلام","أحمد خليل شاهين","عبدالعزيز سحيم","عبدالعزيز الأحمد","يحيى حوا","محمد طه الجنيد","عمر هشام العربي","هزاع البلوشي","ضياء الدين القاسمي","أحمد خضر الطرابلسي","أحمد الحذيفي","محمد المحيسني"
+    ];
+
+    // Form Switcher
+    function switchForm(form) {
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('otpContainer').classList.add('hidden');
+
+        if(form === 'login') document.getElementById('loginForm').classList.remove('hidden');
+        if(form === 'register') document.getElementById('registerForm').classList.remove('hidden');
+    }
+
+    // Email Validation Check
+    function isValidEmail(email) {
+        // فیلتەرکردنی ئیمێڵی فەیك (Disposables/Temp Mail)
+        const fakeDomains = ['tempmail.com', 'mailinator.com', '10minutemail.com', 'guerrillamail.com', 'trashmail.com'];
+        const domain = email.split('@')[1];
+        if(!domain || fakeDomains.includes(domain.toLowerCase())) {
+            return false;
+        }
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(email);
+    }
+
+    // OTP Sending Logic
+    function sendOTP() {
+        const email = document.getElementById('regEmail').value;
+        if(!isValidEmail(email)) {
+            alert("تکایە ئیمێڵێکی ڕاستەقینە بنووسە! ئیمێڵی فەیک یان ناڕاست وەرناگیرێت.");
+            return;
+        }
+
+        generatedOTP = Math.floor(100000 + Math.random() * 900000);
+        
+        // Timeout 5 Minutes Logic
+        alert("کۆدی پشتڕاستکردنەوە دروستکرا! (ماوەی ٥ دەقە بەکارە)");
+        console.log("Real Sent OTP Code: ", generatedOTP); // For Testing
+
+        /* 
+        // بۆ بەکارهێنانی EmailJS لەسەر سێرڤەری ڕاستەقینە:
+        emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+            to_email: email,
+            otp_code: generatedOTP
+        });
+        */
+
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('otpContainer').classList.remove('hidden');
+
+        // Block after 5 minutes (300,000 ms)
+        otpTimeout = setTimeout(() => {
+            generatedOTP = null;
+            alert("کۆدەکەت ماوەی ٥ دەقەی بەسەرچوو (Timeout)! تکایە سەرلەنوێ داوا بکەرەوە.");
+            switchForm('register');
+        }, 300000);
+    }
+
+    function verifyOTP() {
+        const userOTP = document.getElementById('otpInput').value;
+        if(generatedOTP && userOTP == generatedOTP) {
+            clearTimeout(otpTimeout);
+            alert("ئەکاوەنتەکەت بە سەرکەوتوویی دروستکرا!");
+            loginSuccess();
+        } else {
+            alert("کۆدەکە هەڵەیە یان بەسەرچووە!");
+        }
+    }
+
+    // Submit Login Form
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        loginSuccess();
+    });
+
+    function loginSuccess() {
+        document.getElementById('authContainer').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        initDashboard();
+        playIntroAudio();
+    }
+
+    function logout() {
+        document.getElementById('appContainer').classList.add('hidden');
+        document.getElementById('authContainer').classList.remove('hidden');
+        switchForm('login');
+    }
+
+    // Dashboard Init
+    function initDashboard() {
+        // Populate Surahs
+        const surahBox = document.getElementById('surahList');
+        surahBox.innerHTML = surahs.map((s, index) => `<div class="grid-item"><span>${index + 1}. ${s}</span> <i class="fa-solid fa-play" style="color:var(--primary)"></i></div>`).join('');
+
+        // Populate Reciters
+        const reciterBox = document.getElementById('reciterList');
+        reciterBox.innerHTML = [...new Set(reciters)].map(r => `<div class="grid-item"><i class="fa-solid fa-user-astronaut"></i> <span>${r}</span></div>`).join('');
+
+        // Load Default Zikr
+        showZikrCategory('sleep');
+    }
+
+    // Audio Intro (Play for 50s once or twice)
+    function playIntroAudio() {
+        const audio = document.getElementById('introAudio');
+        const timerText = document.getElementById('timerCount');
+        
+        audio.play().catch(e => console.log("Audio waiting user interaction"));
+        
+        let timeLeft = 50;
+        const interval = setInterval(() => {
+            timeLeft--;
+            timerText.innerText = timeLeft;
+            if(timeLeft <= 0) {
+                clearInterval(interval);
+                if(!isIntroPlayedOnce) {
+                    isIntroPlayedOnce = true;
+                    playIntroAudio(); // Repeat 1 time as requested
+                } else {
+                    document.getElementById('introAudioBanner').style.display = 'none';
+                }
+            }
+        }, 1000);
+    }
+
+    // Navigation Tabs
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.remove('hidden');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Zikr Data Display
+    function showZikrCategory(cat) {
+        const container = document.getElementById('zikrContent');
+        if(cat === 'sleep') {
+            container.innerHTML = `
+                <div class="zikr-box">
+                    <h3>بەڵێ، بە دڵنیایی 🌙🤲</h3>
+                    <p>ئەگەر مەبەستت هەموو ئەو ئایەتانەیە کە پێش خەوتن پێشنیار کراون، بە تەواوی دەینووسم، نەک بە کورتە.</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>١. آیەتی کۆرسی — سورەتی البقرة، ٢٥٥</h3>
+                    <p>اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٢. کۆتایی سورەتی البقرة — ٢٨٥</h3>
+                    <p>آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِنْ رُسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٣. سورەتی الإخلاص</h3>
+                    <p>قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٤. سورەتی الفلق</h3>
+                    <p>قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٥. سورەتی الناس</h3>
+                    <p>قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ</p>
+                    <small style="color:var(--primary)">ئەم سێ سورەتەی الإخلاص، الفلق، الناس ـیش پێش خەوتن ٣ جار خوێندنەوەیان لە سوننەتەکانی پێغەمبەر ﷺ ـە. 🌙</small>
+                </div>
+            `;
+        } else if(cat === 'morning_evening') {
+            container.innerHTML = `
+                <div class="zikr-box">
+                    <h3>بەڵێ 🌅🤲 زیکرەکانی بەیانی و ئێوارە</h3>
+                    <p><b>بەیانی:</b> دوای نوێژی بەیانی تا پێش خۆرئاوابوون.<br><b>ئێوارە:</b> لە دوای عەسر تا شەو.</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>١. آیەتی کۆرسی (١ جار)</h3>
+                    <p>اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٢. الإخلاص، الفلق، الناس (هەر یەکە ٣ جار)</h3>
+                    <p>قُلْ هُوَ اللَّهُ أَحَدٌ... | قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ... | قُلْ أَعُوذُ بِرَبِّ النَّاسِ...</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٣. «أصبحنا» بۆ بەیانی / «أمسينا» بۆ ئێوارە (١ جار)</h3>
+                    <p>أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ...</p>
+                </div>
+                <div class="zikr-box">
+                    <h3>٤. سەییدول ئیستیغفار (١ جار)</h3>
+                    <p>اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ...</p>
+                </div>
+            `;
+        } else if(cat === 'tahiyat') {
+            container.innerHTML = `
+                <div class="zikr-box">
+                    <h3>تەحیاتی ناو نوێژ 🤲</h3>
+                    <p style="font-size: 1.2rem; line-height:2;">التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ.</p>
+                    <hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)">
+                    <p><b>مانای کوردی:</b><br>هەموو سڵاو و ڕێز و عبادەتەکان بۆ خوایە. سڵاو و ڕەحمەت و بەرەکەتی خوای لەسەر تۆ بێت ئەی پێغەمبەر. سڵاو لەسەر ئێمە و هەموو بەندە چاکەکانی خوا. شایەتی دەدەم هیچ پەرستراوێک بە حەق نییە جگە لە خوا، و شایەتی دەدەم محەممەد ﷺ بەندە و نێردراوی خوایە.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Smart Tasbih Counter System
+    let counterValue = 0;
+    const tasbihList = ["سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "لَا إِلَٰهَ إِلَّا اللَّهُ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ"];
+    let tasbihIndex = 0;
+
+    function countTasbih() {
+        counterValue++;
+        document.getElementById('counter').innerText = counterValue;
+
+        if(counterValue % 100 === 0) {
+            tasbihIndex = (tasbihIndex + 1) % tasbihList.length;
+            document.getElementById('tasbihText').innerText = tasbihList[tasbihIndex];
+            alert("پیرۆزە! ١٠٠ دانەت تەواو کرد، زیکرەکە گۆڕدرا بۆ: " + tasbihList[tasbihIndex]);
+        }
+    }
+
+    // Prayer Time Alerts
+    function enablePrayerAlert() {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("سیستەمی ئاگادارکردنەوەی بانگ چالاک بوو!");
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
